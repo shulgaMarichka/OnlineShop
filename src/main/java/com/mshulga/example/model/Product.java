@@ -1,4 +1,4 @@
-package com.example.model;
+package com.mshulga.example.model;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -13,9 +13,13 @@ public class Product {
     private BigDecimal price;
     private String sku;
     private String name;
-//    private OrderItem item;
 
-//    private Category category;
+    @OneToOne(mappedBy = "product")
+    private OrderItem item;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="category_id", referencedColumnName="id", nullable=false)
+    private Category category;
 
     public Long getId() {
         return id;
@@ -49,19 +53,19 @@ public class Product {
         this.name = name;
     }
 
-//    public Category getCategory() {
-//        return category;
-//    }
-//
-//    public void setCategory(Category category) {
-//        this.category = category;
-//    }
+    public Category getCategory() {
+        return category;
+    }
 
-//    public OrderItem getItem() {
-//        return item;
-//    }
-//
-//    public void setItem(OrderItem item) {
-//        this.item = item;
-//    }
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public OrderItem getItem() {
+        return item;
+    }
+
+    public void setItem(OrderItem item) {
+        this.item = item;
+    }
 }

@@ -1,9 +1,9 @@
-package com.example.model;
+package com.mshulga.example.model;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="orders")
@@ -14,7 +14,9 @@ public class Order {
     private Long id;
     private BigDecimal totalBill;
     private Date orderDate;
-//    private List<OrderItem> orderItems;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<OrderItem> orderItems;
 
     public Long getId() {
         return id;
@@ -40,11 +42,11 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-//    public List<OrderItem> getOrderItems() {
-//        return orderItems;
-//    }
-//
-//    public void setOrderItems(List<OrderItem> orderItems) {
-//        this.orderItems = orderItems;
-//    }
+    public Set<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(Set<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
 }

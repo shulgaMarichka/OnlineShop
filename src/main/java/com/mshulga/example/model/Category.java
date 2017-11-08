@@ -1,7 +1,7 @@
-package com.example.model;
+package com.mshulga.example.model;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="categories")
@@ -12,7 +12,8 @@ public class Category {
     private Long id;
     private String Name;
 
-//    private List<Product> products;
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Product> products;
 
     public Long getId() {
         return id;
@@ -30,11 +31,11 @@ public class Category {
         Name = name;
     }
 
-//    public List<Product> getProducts() {
-//        return products;
-//    }
-//
-//    public void setProducts(List<Product> products) {
-//        this.products = products;
-//    }
+    public Set<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<Product> products) {
+        this.products = products;
+    }
 }
