@@ -1,5 +1,7 @@
 package com.mshulga.example.model;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 
@@ -10,9 +12,15 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+
+    @NotEmpty
     private BigDecimal price;
-    private String sku;
+
+    @NotEmpty
     private String name;
+
+    @NotEmpty
+    private String sku;
 
     @OneToOne(mappedBy = "product")
     private OrderItem item;

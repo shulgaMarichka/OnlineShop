@@ -1,0 +1,99 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <preConditions>
+        <runningAs username="postgres"/>
+    </preConditions>
+
+    <changeSet id="0.0.1.1" author="mshulga">
+        <createTable tableName="categories">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="0.0.1.2" author="mshulga">
+        <createTable tableName="products">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="numeric(19,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sku" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="category_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="0.0.1.3" author="mshulga">
+        <createTable tableName="orders">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="order_date" type="timestamp without time zone" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="total_bill" type="numeric(19,2)" defaultValue="0.0"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="0.0.1.4" author="mshulga">
+        <createTable tableName="order_items">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="quantity" type="int" defaultValue="1"/>
+            <column name="order_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="0.0.1.5" author="mshulga">
+        <addForeignKeyConstraint baseColumnNames="category_id"
+                                 baseTableName="products"
+                                 constraintName="fk_product_category"
+                                  onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="categories"/>
+    </changeSet>
+
+    <changeSet id="0.0.1.6" author="mshulga">
+        <addForeignKeyConstraint baseColumnNames="order_id"
+                                 baseTableName="order_items"
+                                 constraintName="fk_order_item_order"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="orders"/>
+    </changeSet>
+
+    <changeSet id="0.0.1.7" author="mshulga">
+        <addForeignKeyConstraint baseColumnNames="product_id"
+                                 baseTableName="order_items"
+                                 constraintName="fk_order_item_products"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="products"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,5 +1,7 @@
 package com.mshulga.example.model;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 import javax.persistence.*;
 
 @Entity
@@ -15,6 +17,7 @@ public class OrderItem {
     @JoinColumn(name="order_id", referencedColumnName="id", nullable=false)
     private Order order;
 
+    @NotEmpty
     @OneToOne(cascade = CascadeType.ALL)
     private Product product;
 
