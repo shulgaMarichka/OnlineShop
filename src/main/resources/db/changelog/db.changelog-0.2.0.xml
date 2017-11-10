@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -7,12 +5,10 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <!-- Include all files -->
-    <!--<includeAll path="db.changelog"/>-->
-
-    <!-- OR include list of concrete files -->
-    <include file="db/changelog/db.changelog-0.0.1.xml"/>
-    <include file="db/changelog/db.changelog-0.1.0.xml"/>
-    <include file="db/changelog/db.changelog-0.2.0.xml"/>
+    <changeSet id="0.2.0.1" author="mshulga">
+        <sql>
+            ALTER TABLE order_items ALTER COLUMN order_id DROP NOT NULL
+        </sql>
+    </changeSet>
 
 </databaseChangeLog>

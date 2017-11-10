@@ -10,7 +10,8 @@ import java.util.Set;
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="products_id_seq")
+    @SequenceGenerator(name="products_id_seq", sequenceName="products_id_seq", allocationSize=1)
     private Long id;
     private BigDecimal totalBill;
     private Date orderDate;

@@ -1,23 +1,25 @@
 package com.mshulga.example.model;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name="order_items")
 public class OrderItem {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="order_items_id_seq")
+    @SequenceGenerator(name="order_items_id_seq", sequenceName="order_items_id_seq", allocationSize=1)
     private Long id;
     private Integer quantity;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="order_id", referencedColumnName="id", nullable=false)
+    @JoinColumn(name="order_id", referencedColumnName="id")
     private Order order;
 
-    @NotEmpty
+    @NotNull
     @OneToOne(cascade = CascadeType.ALL)
     private Product product;
 

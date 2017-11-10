@@ -1,8 +1,10 @@
 package com.mshulga.example.model;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Entity
@@ -10,23 +12,25 @@ import java.math.BigDecimal;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="products_id_seq")
+    @SequenceGenerator(name="products_id_seq", sequenceName="products_id_seq", allocationSize=1)
     private Long id;
 
-    @NotEmpty
+    @NotNull
     private BigDecimal price;
 
-    @NotEmpty
+    @NotBlank
     private String name;
 
-    @NotEmpty
+    @NotBlank
     private String sku;
 
     @OneToOne(mappedBy = "product")
     private OrderItem item;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="category_id", referencedColumnName="id", nullable=false)
+    @JoinColumn(name="category_id", referencedColumnName="id")
     private Category category;
 
     public Long getId() {

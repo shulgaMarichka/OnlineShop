@@ -1,6 +1,6 @@
 package com.mshulga.example.model;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -10,10 +10,11 @@ import java.util.Set;
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="categories_id_seq")
+    @SequenceGenerator(name="categories_id_seq", sequenceName="categories_id_seq", allocationSize=1)
     private Long id;
 
-    @NotEmpty
+    @NotBlank
     private String Name;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
