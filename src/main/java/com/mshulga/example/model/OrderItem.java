@@ -19,8 +19,9 @@ public class OrderItem {
     @JoinColumn(name="order_id", referencedColumnName="id")
     private Order order;
 
+    @JsonIgnore
     @NotNull
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     private Product product;
 
     public Long getId() {

@@ -1,8 +1,7 @@
 package com.mshulga.example.service;
 
-import com.mshulga.example.dao.imp.OrderItemDao;
+import com.mshulga.example.dao.impl.OrderItemDao;
 import com.mshulga.example.model.OrderItem;
-import com.mshulga.example.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

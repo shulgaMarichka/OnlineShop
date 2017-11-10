@@ -1,6 +1,8 @@
 package com.mshulga.example.controller;
 
+import com.mshulga.example.model.Category;
 import com.mshulga.example.model.Product;
+import com.mshulga.example.service.CategoryService;
 import com.mshulga.example.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -12,40 +14,58 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/products")
+@RequestMapping("/categories/{idCategory}/products")
 public class ProductController {
 
     @Autowired
-    private ProductService service;
+    private ProductService productService;
+    @Autowired
+    private CategoryService categoryService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProduct(@PathVariable("id") Long id) {
-        Product product = service.get(id);
-        if (null == product) {
+    public ResponseEntity<Product> getProduct(@PathVariable("idCategory") Long idCategory, @PathVariable("id") Long id) {
+        Category category = categoryService.get(idCategory);
+        Product product = productService.get(id);
+        if (null == category || null == product) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Product>> getAllProduct() {
-        List<Product> products = service.getAll();
+    public ResponseEntity<List<Product>> getAllProduct(@PathVariable("idCategory") Long idCategory) {
+        Category category = categoryService.get(idCategory);
+        if (null == category) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        List<Product> products = productService.getAll();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Number of records found", String.valueOf(products.size()));
         return new ResponseEntity<>(products, headers, HttpStatus.OK);
     }
 
     @PostMapping("")
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        Product addedProduct = service.create(product);
+    public ResponseEntity<Product> createProduct(@PathVariable("idCategory") Long idCategory, @RequestBody Product product) {
+        Category category = categoryService.get(idCategory);
+        if (null == category) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        product.setCategory(category);
+        Product addedProduct = productService.create(product);
         return new ResponseEntity<>(addedProduct, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable("id") Long id, @RequestBody Product product) {
-        service.update(product);
+    public ResponseEntity<Product> updateProduct(@PathVariable("idCategory") Long idCategory, @PathVariable("id") Long id,
+                    @RequestBody Product product) {
+        Category category = categoryService.get(idCategory);
+        if (null == category) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        product.setCategory(category);
+        productService.update(product);
         HttpHeaders headers = new HttpHeaders();
-        Product searchedProduct = service.get(id);
+        Product searchedProduct = productService.get(id);
         if (null == product) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } else if (null == searchedProduct) {
@@ -56,8 +76,12 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeProduct(@PathVariable("id") Long id) {
-        boolean isRemoved = service.remove(id);
+    public ResponseEntity<Void> removeProduct(@PathVariable("idCategory") Long idCategory, @PathVariable("id") Long id) {
+        Category category = categoryService.get(idCategory);
+        if (null == category) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        boolean isRemoved = productService.remove(id);
         if (isRemoved) {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Product was removed - ", String.valueOf(id));
@@ -65,4 +89,5 @@ public class ProductController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
 }

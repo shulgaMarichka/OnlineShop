@@ -1,4 +1,4 @@
-package com.mshulga.example.dao.imp;
+package com.mshulga.example.dao.impl;
 
 import com.mshulga.example.dao.GenericDao;
 import com.mshulga.example.model.Category;
@@ -35,11 +35,8 @@ public class CategoryDao extends GenericDao<Category> {
     }
 
     private void setReverseProductRel(Category category) {
-        Set<Product> products = new HashSet<>(category.getProducts());
-        category.getProducts().clear();
-        products.stream().forEach(product -> {
-            product.setCategory(category);
-        });
-        category.setProducts(products);
+        category.getProducts().stream().forEach(product ->
+            product.setCategory(category)
+        );
     }
 }

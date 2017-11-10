@@ -25,7 +25,7 @@ public class Product {
     @NotBlank
     private String sku;
 
-    @OneToOne(mappedBy = "product")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "product")
     private OrderItem item;
 
     @JsonIgnore

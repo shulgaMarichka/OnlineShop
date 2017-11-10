@@ -1,7 +1,9 @@
 package com.mshulga.example.controller;
 
 import com.mshulga.example.model.OrderItem;
+import com.mshulga.example.model.Product;
 import com.mshulga.example.service.OrderItemService;
+import com.mshulga.example.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,23 +14,30 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/order_items")
+@RequestMapping("/products/{idProduct}/order_items")
 public class OrderItemController {
 
     @Autowired
     private OrderItemService service;
+    @Autowired
+    private ProductService productService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderItem> getOrderItem(@PathVariable("id") Long id) {
+    public ResponseEntity<OrderItem> getOrderItem(@PathVariable("idProduct") Long idProduct, @PathVariable("id") Long id) {
+        Product product = productService.get(idProduct);
         OrderItem orderItem = service.get(id);
-        if (null == orderItem) {
+        if (null == product || null == orderItem) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(orderItem, HttpStatus.OK);
     }
 
     @GetMapping("")
-    public ResponseEntity<List<OrderItem>> getAllOrderItems() {
+    public ResponseEntity<List<OrderItem>> getAllOrderItems(@PathVariable("idProduct") Long idProduct) {
+        Product product = productService.get(idProduct);
+        if (null == product) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         List<OrderItem> orderItems = service.getAll();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Number of records found", String.valueOf(orderItems.size()));
@@ -36,13 +45,25 @@ public class OrderItemController {
     }
 
     @PostMapping("")
-    public ResponseEntity<OrderItem> createOrderItem(@RequestBody OrderItem orderItem) {
+    public ResponseEntity<OrderItem> createOrderItem(@PathVariable("idProduct") Long idProduct,
+                    @RequestBody OrderItem orderItem) {
+        Product product = productService.get(idProduct);
+        if (null == product) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        orderItem.setProduct(product);
         OrderItem addedOrderItem = service.create(orderItem);
         return new ResponseEntity<>(addedOrderItem, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<OrderItem> updateOrderItem(@PathVariable("id") Long id, @RequestBody OrderItem orderItem) {
+    public ResponseEntity<OrderItem> updateOrderItem(@PathVariable("idProduct") Long idProduct,
+                    @PathVariable("id") Long id, @RequestBody OrderItem orderItem) {
+        Product product = productService.get(idProduct);
+        if (null == product) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        orderItem.setProduct(product);
         service.update(orderItem);
         HttpHeaders headers = new HttpHeaders();
         OrderItem searchedOrderItem = service.get(id);
@@ -56,7 +77,12 @@ public class OrderItemController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeOrderItem(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> removeOrderItem(@PathVariable("idProduct") Long idProduct,
+                    @PathVariable("id") Long id) {
+        Product product = productService.get(idProduct);
+        if (null == product) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         boolean isRemoved = service.remove(id);
         if (isRemoved) {
             HttpHeaders headers = new HttpHeaders();
