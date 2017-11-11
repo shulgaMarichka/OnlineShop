@@ -61,6 +61,7 @@ public class ProductController {
         }
         product.setCategory(category);
         productService.update(product);
+        product.setId(id);
         Product searchedProduct = productService.get(id);
         if (null == product) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

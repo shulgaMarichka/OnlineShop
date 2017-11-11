@@ -43,6 +43,7 @@ public class OrderItemController {
 
     @PutMapping("/{id}")
     public ResponseEntity<OrderItem> updateOrderItem(@PathVariable("id") Long id, @RequestBody OrderItem orderItem) {
+        orderItem.setId(id);
         service.update(orderItem);
         OrderItem searchedOrderItem = service.get(id);
         if (null == orderItem) {

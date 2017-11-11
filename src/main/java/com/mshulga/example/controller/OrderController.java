@@ -40,6 +40,7 @@ public class OrderController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Order> updateOrder(@PathVariable("id") Long id, @RequestBody Order order) {
+        order.setId(id);
         service.update(order);
         Order searchedOrder = service.get(id);
         if (null == order) {

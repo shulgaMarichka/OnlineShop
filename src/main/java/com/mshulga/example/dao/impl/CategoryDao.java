@@ -27,7 +27,8 @@ public class CategoryDao extends GenericDao<Category> {
 
     @Override
     public Category update(Category category) {
-        if (!category.getProducts().isEmpty()) {
+        if (null != category && null != category.getProducts() &&
+        !category.getProducts().isEmpty()) {
             setReverseProductRel(category);
         }
         super.update(category);

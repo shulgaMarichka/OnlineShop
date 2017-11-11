@@ -40,6 +40,7 @@ public class CategoryController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Category> updateCategory(@PathVariable("id") Long id, @RequestBody Category category) {
+        category.setId(id);
         service.update(category);
         Category searchedCategory = service.get(id);
         if (null == category) {
