@@ -25,11 +25,8 @@ public class Product {
     @NotBlank
     private String sku;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "product")
-    private OrderItem item;
-
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="category_id", referencedColumnName="id")
     private Category category;
 
@@ -73,11 +70,4 @@ public class Product {
         this.category = category;
     }
 
-    public OrderItem getItem() {
-        return item;
-    }
-
-    public void setItem(OrderItem item) {
-        this.item = item;
-    }
 }

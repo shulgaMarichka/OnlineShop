@@ -5,7 +5,6 @@ import com.mshulga.example.model.Product;
 import com.mshulga.example.service.CategoryService;
 import com.mshulga.example.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -39,9 +38,7 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         List<Product> products = productService.getAll();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Number of records found", String.valueOf(products.size()));
-        return new ResponseEntity<>(products, headers, HttpStatus.OK);
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @PostMapping("")
@@ -64,15 +61,13 @@ public class ProductController {
         }
         product.setCategory(category);
         productService.update(product);
-        HttpHeaders headers = new HttpHeaders();
         Product searchedProduct = productService.get(id);
         if (null == product) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } else if (null == searchedProduct) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        headers.add("Product was updated  - ", String.valueOf(id));
-        return new ResponseEntity<>(product, headers, HttpStatus.OK);
+        return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -83,9 +78,7 @@ public class ProductController {
         }
         boolean isRemoved = productService.remove(id);
         if (isRemoved) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Product was removed - ", String.valueOf(id));
-            return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

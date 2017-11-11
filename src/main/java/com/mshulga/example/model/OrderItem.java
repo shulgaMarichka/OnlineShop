@@ -12,6 +12,8 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="order_items_id_seq")
     @SequenceGenerator(name="order_items_id_seq", sequenceName="order_items_id_seq", allocationSize=1)
     private Long id;
+
+    @NotNull
     private Integer quantity;
 
     @JsonIgnore
@@ -19,9 +21,9 @@ public class OrderItem {
     @JoinColumn(name="order_id", referencedColumnName="id")
     private Order order;
 
-    @JsonIgnore
     @NotNull
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "product_id")
     private Product product;
 
     public Long getId() {

@@ -2,7 +2,6 @@ package com.mshulga.example.dao.impl;
 
 import com.mshulga.example.dao.GenericDao;
 import com.mshulga.example.model.Order;
-import com.mshulga.example.model.OrderItem;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,7 +14,9 @@ public class OrderDao extends GenericDao<Order> {
 
     @Override
     public Order create(Order order) {
-        setReverseOrderItemRel(order);
+        if (null != order.getOrderItems()) {
+            setReverseOrderItemRel(order);
+        }
         super.create(order);
         return order;
     }

@@ -19,22 +19,14 @@ public class ProductDao extends GenericDao<Product> {
 
     @Override
     public Product create(Product product) {
-        setReverseOrderItemRel(product);
         super.create(product);
         return product;
     }
 
     @Override
     public Product update(Product product) {
-        setReverseOrderItemRel(product);
         super.update(product);
         return product;
-    }
-
-    private void setReverseOrderItemRel(Product product) {
-        if (null != product.getItem()) {
-            product.getItem().setProduct(product);
-        }
     }
 
 }
