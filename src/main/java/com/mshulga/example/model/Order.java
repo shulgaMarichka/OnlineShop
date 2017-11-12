@@ -1,10 +1,13 @@
 package com.mshulga.example.model;
 
+import org.springframework.data.elasticsearch.annotations.Document;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 
+@Document(indexName = "online_shop", type = "orders", shards = 1, replicas = 0)
 @Entity
 @Table(name="orders")
 public class Order {

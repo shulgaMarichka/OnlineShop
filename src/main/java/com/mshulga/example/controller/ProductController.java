@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -22,7 +23,8 @@ public class ProductController {
     private CategoryService categoryService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProduct(@PathVariable("idCategory") Long idCategory, @PathVariable("id") Long id) {
+    public ResponseEntity<Product> getProduct(@PathVariable("idCategory") Long idCategory,
+                                              @PathVariable("id") Long id) {
         Category category = categoryService.get(idCategory);
         Product product = productService.get(id);
         if (null == category || null == product) {
@@ -32,7 +34,8 @@ public class ProductController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Product>> getAllProduct(@PathVariable("idCategory") Long idCategory) {
+    public ResponseEntity<List<Product>> getAllProduct(@PathVariable("idCategory")
+                                                               Long idCategory) {
         Category category = categoryService.get(idCategory);
         if (null == category) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -42,7 +45,8 @@ public class ProductController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Product> createProduct(@PathVariable("idCategory") Long idCategory, @RequestBody Product product) {
+    public ResponseEntity<Product> createProduct(@PathVariable("idCategory") Long idCategory,
+                                                 @Valid @RequestBody Product product) {
         Category category = categoryService.get(idCategory);
         if (null == category) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -53,33 +57,33 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable("idCategory") Long idCategory, @PathVariable("id") Long id,
-                    @RequestBody Product product) {
+    public ResponseEntity<Product> updateProduct(@PathVariable("idCategory") Long idCategory,
+                                                 @Valid @PathVariable("id") Long id,
+                                                 @RequestBody Product product) {
         Category category = categoryService.get(idCategory);
         if (null == category) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         product.setCategory(category);
-        productService.update(product);
         product.setId(id);
         Product searchedProduct = productService.get(id);
-        if (null == product) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } else if (null == searchedProduct) {
+        if (null == searchedProduct) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        productService.update(product);
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeProduct(@PathVariable("idCategory") Long idCategory, @PathVariable("id") Long id) {
+    public ResponseEntity<Void> removeProduct(@PathVariable("idCategory") Long idCategory,
+                                              @PathVariable("id") Long id) {
         Category category = categoryService.get(idCategory);
         if (null == category) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         boolean isRemoved = productService.remove(id);
         if (isRemoved) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

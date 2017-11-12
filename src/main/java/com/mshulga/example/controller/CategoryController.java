@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -33,21 +34,20 @@ public class CategoryController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
+    public ResponseEntity<Category> createCategory(@Valid @RequestBody Category category) {
         Category addedCategory = service.create(category);
         return new ResponseEntity<>(addedCategory, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable("id") Long id, @RequestBody Category category) {
+    public ResponseEntity<Category> updateCategory(@PathVariable("id") Long id,
+                                                   @Valid @RequestBody Category category) {
         category.setId(id);
-        service.update(category);
         Category searchedCategory = service.get(id);
-        if (null == category) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } else if (null == searchedCategory) {
+        if (null == searchedCategory) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        service.update(category);
         return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
@@ -55,7 +55,7 @@ public class CategoryController {
     public ResponseEntity<Void> removeCategory(@PathVariable("id") Long id) {
         boolean isRemoved = service.remove(id);
         if (isRemoved) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

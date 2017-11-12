@@ -11,16 +11,4 @@ public class OrderItemDao extends GenericDao<OrderItem> {
     public Class<OrderItem> getPersistentClass() {
         return OrderItem.class;
     }
-
-    @Override
-    public OrderItem create(OrderItem orderItem) {
-        super.create(orderItem);
-        return orderItem;
-    }
-
-    @Override
-    public OrderItem update(OrderItem orderItem) {
-        super.update(orderItem);
-        return orderItem;
-    }
 }
