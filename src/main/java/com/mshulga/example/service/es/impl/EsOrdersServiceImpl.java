@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class EsOrdersServiceImpl implements EsOrdersService {
 
-    private static final String FIND_PATH = "orderItems.product.name:";
+    private static final String SEARCH_PATH = "orderItems.product.name:";
 
     @Autowired
     private EsOrdersRepository esRepository;
@@ -38,7 +38,7 @@ public class EsOrdersServiceImpl implements EsOrdersService {
 
 
     public Iterable<Order> findByProductName(String productName) {
-        Page<Order> result = ((Page<Order>) esRepository.search(QueryBuilders.queryStringQuery(FIND_PATH +
+        Page<Order> result = ((Page<Order>) esRepository.search(QueryBuilders.queryStringQuery(SEARCH_PATH +
                 productName)));
         return result.getContent();
     }

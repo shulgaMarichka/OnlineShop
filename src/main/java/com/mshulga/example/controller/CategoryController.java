@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @Controller
 @RequestMapping("/categories")
@@ -28,8 +27,8 @@ public class CategoryController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Category>> getAllCategories() {
-        List<Category> categories = service.getAll();
+    public ResponseEntity<Iterable<Category>> getAllCategories() {
+        Iterable<Category> categories = service.getAll();
         return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
@@ -53,10 +52,11 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removeCategory(@PathVariable("id") Long id) {
-        boolean isRemoved = service.remove(id);
-        if (isRemoved) {
-            return new ResponseEntity<>(HttpStatus.OK);
+        Category category = service.get(id);
+        if (null == category) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        service.remove(category);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

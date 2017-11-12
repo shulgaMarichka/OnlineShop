@@ -1,11 +1,9 @@
 package com.mshulga.example.service;
 
-import com.mshulga.example.dao.impl.OrderItemDao;
+import com.mshulga.example.dao.jpa.OrderItemDao;
 import com.mshulga.example.model.OrderItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class OrderItemService {
@@ -14,23 +12,23 @@ public class OrderItemService {
     private OrderItemDao orderItemDao;
 
     public OrderItem create(OrderItem orderItem) {
-        return orderItemDao.create(orderItem);
+        return orderItemDao.save(orderItem);
     }
 
     public void update(OrderItem orderItem) {
-        orderItemDao.update(orderItem);
+        orderItemDao.save(orderItem);
     }
 
-    public boolean remove(Long id) {
-        return orderItemDao.remove(orderItemDao.getObjectById(id));
+    public void remove(OrderItem orderItem) {
+        orderItemDao.delete(orderItem);
     }
 
     public OrderItem get(Long id) {
-        return orderItemDao.getObjectById(id);
+        return orderItemDao.findOne(id);
     }
 
-    public List<OrderItem> getAll() {
-        return orderItemDao.getAll();
+    public Iterable<OrderItem> getAll() {
+        return orderItemDao.findAll();
     }
 
 

@@ -1,7 +1,7 @@
 package com.mshulga.example.service;
 
-import com.mshulga.example.dao.impl.OrderDao;
-import com.mshulga.example.dao.impl.OrderItemDao;
+import com.mshulga.example.dao.jpa.OrderDao;
+import com.mshulga.example.dao.jpa.OrderItemDao;
 import com.mshulga.example.model.Order;
 import com.mshulga.example.model.OrderItem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +35,12 @@ public class OrderService {
             inputOrderItems.addAll(order.getOrderItems());
             order.getOrderItems().clear();
         }
-        Order savedOrder = orderDao.create(order);
+        Order savedOrder = orderDao.save(order);
 
         savedOrder.setOrderItems(inputOrderItems);
         inputOrderItems.stream().forEach(orderItem -> {
-            orderItem.setOrder(savedOrder);
-                    orderItemDao.update(orderItem);
+                    orderItem.setOrder(savedOrder);
+                    orderItemDao.save(orderItem);
                 }
         );
 
@@ -53,46 +53,44 @@ public class OrderService {
             order.setOrderDate(new Date());
         }
 
-        Order oldOrder = orderDao.getObjectById(order.getId());
+        Order oldOrder = orderDao.findOne(order.getId());
         enrichOrderData(order);
 
-        if(null != oldOrder.getOrderItems()) {
+        if (null != oldOrder.getOrderItems()) {
             Map<Long, OrderItem> oldOrderItems = oldOrder.getOrderItems().stream().collect(
                     Collectors.toMap(OrderItem::getId, Function.identity()));
             Map<Long, OrderItem> newOrderItems = (null != order.getOrderItems()) ?
                     order.getOrderItems().stream().collect(
-                    Collectors.toMap(OrderItem::getId, Function.identity())) :
+                            Collectors.toMap(OrderItem::getId, Function.identity())) :
                     new HashMap<>();
 
             oldOrderItems.forEach((k, v) -> {
                 OrderItem currItem = newOrderItems.get(k);
                 if (null == currItem) {
                     v.setOrder(null);
-                    orderItemDao.update(v);
+                    orderItemDao.save(v);
                 }
             });
         }
 
         order.getOrderItems().stream().forEach(orderItem -> {
                     orderItem.setOrder(order);
-                    orderItemDao.update(orderItem);
+                    orderItemDao.save(orderItem);
                 }
         );
-        orderDao.update(order);
-
-
+        orderDao.save(order);
     }
 
-    public boolean remove(Long id) {
-        return orderDao.remove(orderDao.getObjectById(id));
+    public void remove(Order order) {
+        orderDao.delete(order);
     }
 
     public Order get(Long id) {
-        return orderDao.getObjectById(id);
+        return orderDao.findOne(id);
     }
 
-    public List<Order> getAll() {
-        return orderDao.getAll();
+    public Iterable<Order> getAll() {
+        return orderDao.findAll();
     }
 
     private void enrichOrderData(Order order) {
@@ -109,12 +107,12 @@ public class OrderService {
         });
     }
 
-    private void enrichOrderItems(Order order){
+    private void enrichOrderItems(Order order) {
         Set<OrderItem> inputOrderItems = new HashSet<>();
 
         order.getOrderItems().forEach(orderItem -> {
             if (null != orderItem.getId()) {
-                OrderItem currItem = orderItemDao.getObjectById(orderItem.getId());
+                OrderItem currItem = orderItemDao.findOne(orderItem.getId());
                 if (null != currItem) {
                     inputOrderItems.add(currItem);
                 }
@@ -122,8 +120,6 @@ public class OrderService {
         });
         order.setOrderItems(inputOrderItems);
     }
-
-
 
 
 }

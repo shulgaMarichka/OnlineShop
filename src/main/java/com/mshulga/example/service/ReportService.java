@@ -1,6 +1,6 @@
 package com.mshulga.example.service;
 
-import com.mshulga.example.dao.impl.OrderDao;
+import com.mshulga.example.dao.jpa.OrderDao;
 import com.mshulga.example.model.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -21,12 +20,11 @@ public class ReportService {
     private OrderDao orderDao;
 
     public Map<String, BigDecimal> getOrderAmountByDay() {
-        List<Order> orders = orderDao.getAll();
+        Iterable<Order> orders = orderDao.findAll();
         Map<String, BigDecimal> result = new HashMap<>();
 
-        orders.stream().forEach(order -> {
+        orders.forEach(order -> {
             String date = formatter.format(order.getOrderDate());
-
             BigDecimal prevAmount = result.get(date);
             result.put(date, (null != prevAmount) ?
                     prevAmount.add(order.getTotalBill()) :

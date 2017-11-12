@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.mshulga.example"})
 @EnableElasticsearchRepositories(basePackages = "com.mshulga.example.dao.es")
-@EnableJpaRepositories(basePackages = "com.mshulga.example.dao")
+@EnableJpaRepositories(basePackages = "com.mshulga.example.dao.jpa")
 public class OnlineShopSpringBootApplication {
 
     public static void main(String[] args) {

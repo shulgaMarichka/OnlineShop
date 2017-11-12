@@ -10,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @Controller
 @RequestMapping("/order-items")
@@ -31,8 +30,8 @@ public class OrderItemController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<OrderItem>> getAllOrderItems() {
-        List<OrderItem> orderItems = service.getAll();
+    public ResponseEntity<Iterable<OrderItem>> getAllOrderItems() {
+        Iterable<OrderItem> orderItems = service.getAll();
         return new ResponseEntity<>(orderItems, HttpStatus.OK);
     }
 
@@ -56,10 +55,12 @@ public class OrderItemController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removeOrderItem(@PathVariable("id") Long id) {
-        boolean isRemoved = service.remove(id);
-        if (isRemoved) {
-            return new ResponseEntity<>(HttpStatus.OK);
+        OrderItem orderItem = service.get(id);
+        if (null == orderItem) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        service.remove(orderItem);
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 }

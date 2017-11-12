@@ -1,11 +1,9 @@
 package com.mshulga.example.service;
 
-import com.mshulga.example.dao.impl.CategoryDao;
+import com.mshulga.example.dao.jpa.CategoryDao;
 import com.mshulga.example.model.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class CategoryService {
@@ -14,24 +12,33 @@ public class CategoryService {
     private CategoryDao categoryDao;
 
     public Category create(Category category) {
-        return categoryDao.create(category);
+        setReverseProductRel(category);
+        return categoryDao.save(category);
     }
 
     public void update(Category category) {
-        categoryDao.update(category);
+        setReverseProductRel(category);
+        categoryDao.save(category);
     }
 
-    public boolean remove(Long id) {
-        return categoryDao.remove(categoryDao.getObjectById(id));
+    public void remove(Category category) {
+        categoryDao.delete(category);
     }
 
     public Category get(Long id) {
-        return categoryDao.getObjectById(id);
+        return categoryDao.findOne(id);
     }
 
-    public List<Category> getAll() {
-        return categoryDao.getAll();
+    public Iterable<Category> getAll() {
+        return categoryDao.findAll();
     }
 
+    private void setReverseProductRel(Category category) {
+        if (null != category.getProducts() && !category.getProducts().isEmpty()) {
+            category.getProducts().stream().forEach(product ->
+                    product.setCategory(category)
+            );
+        }
+    }
 
 }

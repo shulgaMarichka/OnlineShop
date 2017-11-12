@@ -11,10 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @Controller
-@RequestMapping("/categories/{idCategory}/products")
+@RequestMapping("/categories")
 public class ProductController {
 
     @Autowired
@@ -22,7 +21,7 @@ public class ProductController {
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/{idCategory}/products/{id}")
     public ResponseEntity<Product> getProduct(@PathVariable("idCategory") Long idCategory,
                                               @PathVariable("id") Long id) {
         Category category = categoryService.get(idCategory);
@@ -33,18 +32,24 @@ public class ProductController {
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
-    @GetMapping("")
-    public ResponseEntity<List<Product>> getAllProduct(@PathVariable("idCategory")
+    @GetMapping("/{idCategory}/products")
+    public ResponseEntity<Iterable<Product>> getAllProductsByCategory(@PathVariable("idCategory")
                                                                Long idCategory) {
         Category category = categoryService.get(idCategory);
         if (null == category) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        List<Product> products = productService.getAll();
+        Iterable<Product> products = productService.getAllByCategory(category);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-    @PostMapping("")
+    @GetMapping("/products")
+    public ResponseEntity<Iterable<Product>> getAllProducts() {
+        Iterable<Product> products = productService.getAll();
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
+    @PostMapping("/{idCategory}/products")
     public ResponseEntity<Product> createProduct(@PathVariable("idCategory") Long idCategory,
                                                  @Valid @RequestBody Product product) {
         Category category = categoryService.get(idCategory);
@@ -56,7 +61,7 @@ public class ProductController {
         return new ResponseEntity<>(addedProduct, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{idCategory}/products/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable("idCategory") Long idCategory,
                                                  @Valid @PathVariable("id") Long id,
                                                  @RequestBody Product product) {
@@ -74,18 +79,16 @@ public class ProductController {
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{idCategory}/products/{id}")
     public ResponseEntity<Void> removeProduct(@PathVariable("idCategory") Long idCategory,
                                               @PathVariable("id") Long id) {
         Category category = categoryService.get(idCategory);
-        if (null == category) {
+        Product product = productService.get(id);
+        if (null == category || null == product) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        boolean isRemoved = productService.remove(id);
-        if (isRemoved) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        productService.remove(product);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
