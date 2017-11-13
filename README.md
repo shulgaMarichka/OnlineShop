@@ -3,7 +3,9 @@ Online shop application.
 
 Run application:
 - mvn spring-boot:run
+
 or
+
 - mvn package
 - java -jar online-shop-1.0-SNAPSHOT.jar 
 
