@@ -28,7 +28,7 @@ public class ReportService {
             BigDecimal prevAmount = result.get(date);
             result.put(date, (null != prevAmount) ?
                     prevAmount.add(order.getTotalBill()) :
-                new BigDecimal(0));
+                    new BigDecimal(0));
         });
 
         return result;

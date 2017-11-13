@@ -4,6 +4,8 @@ import com.mshulga.example.dao.jpa.OrderDao;
 import com.mshulga.example.dao.jpa.OrderItemDao;
 import com.mshulga.example.model.Order;
 import com.mshulga.example.model.OrderItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ import java.util.stream.Collectors;
 @Service
 public class OrderService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(OrderService.class);
+
     @Autowired
     private OrderDao orderDao;
 
@@ -24,65 +28,44 @@ public class OrderService {
     private static final BigDecimal ZERO_NUMBER = new BigDecimal(0);
 
     public Order create(Order order) {
-        order.setTotalBill(ZERO_NUMBER);
-        if (null == order.getOrderDate()) {
-            order.setOrderDate(new Date());
-        }
         enrichOrderData(order);
 
-        Set<OrderItem> inputOrderItems = new HashSet<>();
-        if (null != order.getOrderItems()) {
-            inputOrderItems.addAll(order.getOrderItems());
-            order.getOrderItems().clear();
-        }
         Order savedOrder = orderDao.save(order);
 
-        savedOrder.setOrderItems(inputOrderItems);
-        inputOrderItems.stream().forEach(orderItem -> {
-                    orderItem.setOrder(savedOrder);
-                    orderItemDao.save(orderItem);
-                }
-        );
-
+        savedOrder.getOrderItems().stream().forEach(orderItem -> {
+            orderItem.setOrder(savedOrder);
+            orderItemDao.save(orderItem);
+        });
+        LOG.info("Order was saved into data base.");
         return savedOrder;
     }
 
     public void update(Order order) {
-        order.setTotalBill(ZERO_NUMBER);
-        if (null == order.getOrderDate()) {
-            order.setOrderDate(new Date());
-        }
-
         Order oldOrder = orderDao.findOne(order.getId());
         enrichOrderData(order);
-
         if (null != oldOrder.getOrderItems()) {
-            Map<Long, OrderItem> oldOrderItems = oldOrder.getOrderItems().stream().collect(
-                    Collectors.toMap(OrderItem::getId, Function.identity()));
-            Map<Long, OrderItem> newOrderItems = (null != order.getOrderItems()) ?
-                    order.getOrderItems().stream().collect(
-                            Collectors.toMap(OrderItem::getId, Function.identity())) :
-                    new HashMap<>();
+            Map<Long, OrderItem> oldOrderItems = mapOrderItems(oldOrder);
+            Map<Long, OrderItem> newOrderItems = mapOrderItems(order);
 
-            oldOrderItems.forEach((k, v) -> {
-                OrderItem currItem = newOrderItems.get(k);
+            oldOrderItems.forEach((orderItemId, orderItem) -> {
+                OrderItem currItem = newOrderItems.get(orderItemId);
                 if (null == currItem) {
-                    v.setOrder(null);
-                    orderItemDao.save(v);
+                    orderItem.setOrder(null);
+                    orderItemDao.save(orderItem);
                 }
             });
         }
-
         order.getOrderItems().stream().forEach(orderItem -> {
-                    orderItem.setOrder(order);
-                    orderItemDao.save(orderItem);
-                }
-        );
+            orderItem.setOrder(order);
+            orderItemDao.save(orderItem);
+        });
         orderDao.save(order);
+        LOG.info("Order was updated in data base.");
     }
 
     public void remove(Order order) {
         orderDao.delete(order);
+        LOG.info("Order was removed from data base.");
     }
 
     public Order get(Long id) {
@@ -94,22 +77,32 @@ public class OrderService {
     }
 
     private void enrichOrderData(Order order) {
-        if (null != order.getOrderItems() && !order.getOrderItems().isEmpty()) {
+        order.setTotalBill(ZERO_NUMBER);
+        if (null == order.getOrderDate()) {
+            order.setOrderDate(new Date());
+        }
+        if (null != order.getOrderItems()) {
             enrichOrderItems(order);
             calculateBill(order);
+        } else {
+            order.setOrderItems(new HashSet<>());
         }
     }
 
     private void calculateBill(Order order) {
-        order.getOrderItems().stream().forEach(orderItem -> {
-            order.setTotalBill(order.getTotalBill().add(orderItem.getProduct().getPrice()
-                    .multiply(new BigDecimal(orderItem.getQuantity()))));
-        });
+        order.getOrderItems().stream().forEach(orderItem ->
+                order.setTotalBill(order.getTotalBill().add(orderItem.getProduct().getPrice()
+                        .multiply(new BigDecimal(orderItem.getQuantity()))))
+        );
+    }
+
+    private Map<Long, OrderItem> mapOrderItems(Order order) {
+        return order.getOrderItems().stream().collect(
+                Collectors.toMap(OrderItem::getId, Function.identity()));
     }
 
     private void enrichOrderItems(Order order) {
         Set<OrderItem> inputOrderItems = new HashSet<>();
-
         order.getOrderItems().forEach(orderItem -> {
             if (null != orderItem.getId()) {
                 OrderItem currItem = orderItemDao.findOne(orderItem.getId());
