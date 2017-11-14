@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 @Controller
@@ -22,7 +23,7 @@ public class ReportController {
 
     @GetMapping("")
     public ResponseEntity<Map> getOrderItem() {
-        Map aggregatedOrders = service.getOrderAmountByDay();
+        Map<String, BigDecimal> aggregatedOrders = service.getOrderAmountByDay();
         LOG.info("Daily reports result contains {} aggregate items.", aggregatedOrders.size());
         return new ResponseEntity<>(aggregatedOrders, HttpStatus.OK);
     }
